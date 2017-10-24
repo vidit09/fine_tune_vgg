@@ -9,7 +9,7 @@ from keras import utils
 from keras.callbacks import ModelCheckpoint,TensorBoard
 import numpy as np
 import sys
-from modified_vgg
+import modified_vgg
 
 class CustomDataGen():
 
