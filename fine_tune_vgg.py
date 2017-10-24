@@ -6,10 +6,11 @@ from keras.layers import Dropout, Flatten, Dense
 from keras.models import Model
 from keras import optimizers
 from keras import utils
+from keras.callbacks import ModelCheckpoint,TensorBoard
 import numpy as np
 import sys
 
-class custom_data_gen():
+class CustomDataGen():
 
     def __init__(self, dim_x, dim_y, dim_z, num_class, batch_size):
         self.batch_size = batch_size
@@ -55,7 +56,6 @@ class custom_data_gen():
 
                 yield X, y
 
-
 def read_img_list_from_file(img_dir,file_path):
 
     data = []
@@ -65,46 +65,57 @@ def read_img_list_from_file(img_dir,file_path):
 
     return data
 
-vgg = VGG16(weights='imagenet', include_top=False, input_shape=(224,224,3))
-num_class = 25
+def get_model():
+    vgg = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+    last_conv = vgg.output
 
-directory = '../images/'
-train_data = read_img_list_from_file(directory,'../splits/train0.txt')
-test_data = read_img_list_from_file(directory,'../splits/test0.txt')
+    x = Flatten()(last_conv)
+    x = Dense(256, activation='relu')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(num_class, activation='softmax')(x)
 
-batch_size = int(sys.argv[1])
-num_epoch = int(sys.argv[2])
+    model = Model(vgg.input, x)
 
-last_conv = vgg.output
+    for layer in model.layers[:19]:
+        # print(layer)
+        layer.trainable = False
 
-x = Flatten()(last_conv)
-x = Dense(256, activation='relu')(x)
-x = Dropout(0.5)(x)
-x = Dense(num_class, activation='softmax')(x)
+    return model
 
-model = Model(vgg.input, x)
+if __name__ == "__main__":
 
+    num_class = 25
+    directory = '../images/'
 
-for layer in model.layers[:19]:
-    # print(layer)
-    layer.trainable = False
+    train_data = read_img_list_from_file(directory,'../splits/train0.txt')
+    test_data = read_img_list_from_file(directory,'../splits/test0.txt')
 
+    batch_size = int(sys.argv[1])
+    num_epoch = int(sys.argv[2])
 
-model.compile(loss='categorical_crossentropy', optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
-              metrics=['accuracy'])
+    model = get_model()
+    model.compile(loss='categorical_crossentropy', optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
+                  metrics=['accuracy'])
 
+    training_generator = CustomDataGen(224, 224, 3, num_class, batch_size).generate_batch(train_data)
+    validation_generator = CustomDataGen(224, 224, 3, num_class, batch_size).generate_batch(test_data)
 
-training_generator = custom_data_gen(224, 224, 3, num_class, batch_size).generate_batch(train_data)
-validation_generator = custom_data_gen(224, 224, 3, num_class, batch_size).generate_batch(test_data)
+    file_path = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
+    checkpoint = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
-model.fit_generator(generator = training_generator,
-                    steps_per_epoch = len(train_data)//batch_size,
-                    epochs= num_epoch,
-                    validation_data = validation_generator,
-                    validation_steps = len(test_data)//batch_size)
+    tensorboard = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True, write_images=False)
 
-# model.fit_generator(generator=training_generator,
-#                     steps_per_epoch=1,
-#                     epochs=10,
-#                     validation_data=validation_generator,
-#                     validation_steps=1)
+    callbacks_list = [checkpoint, tensorboard]
+
+    model.fit_generator(generator = training_generator,
+                        steps_per_epoch = len(train_data)//batch_size,
+                        epochs= num_epoch,
+                        validation_data = validation_generator,
+                        validation_steps = len(test_data)//batch_size,
+                        callbacks=callbacks_list)
+
+    # model.fit_generator(generator=training_generator,
+    #                     steps_per_epoch=1,
+    #                     epochs=10,
+    #                     validation_data=validation_generator,
+    #                     validation_steps=1)
