@@ -98,25 +98,29 @@ if __name__ == "__main__":
                   metrics=['accuracy'])
 
     training_generator = CustomDataGen(224, 224, 3, num_class, batch_size).generate_batch(train_data)
-    validation_generator = CustomDataGen(224, 224, 3, num_class, batch_size).generate_batch(test_data)
+    # validation_generator = CustomDataGen(224, 224, 3, num_class, batch_size).generate_batch(test_data)
+    validation_generator = CustomDataGen(224, 224, 3, num_class, len(test_data)).generate_batch(test_data)
+
+    for X,y in validation_generator:
+        val_data = (X,y)
+        break
 
     file_path = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
     checkpoint = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
-    # tensorboard = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True, write_images=False)
+    tensorboard = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True, write_images=False)
 
-    # callbacks_list = [checkpoint, tensorboard]
-    callbacks_list = [checkpoint]
+    callbacks_list = [checkpoint, tensorboard]
+    # callbacks_list = [checkpoint]
 
     model.fit_generator(generator = training_generator,
                         steps_per_epoch = len(train_data)//batch_size,
                         epochs= num_epoch,
-                        validation_data = validation_generator,
+                        validation_data = val_data,
                         validation_steps = len(test_data)//batch_size,
                         callbacks=callbacks_list)
 
     # model.fit_generator(generator=training_generator,
     #                     steps_per_epoch=1,
-    #                     epochs=10,
-    #                     validation_data=validation_generator,
+    #                     validation_data=val_data,
     #                     validation_steps=1)
