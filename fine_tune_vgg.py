@@ -73,7 +73,7 @@ train_data = read_img_list_from_file(directory,'../splits/train0.txt')
 test_data = read_img_list_from_file(directory,'../splits/test0.txt')
 
 batch_size = int(sys.argv[1])
-
+num_epoch = int(sys.argv[2])
 
 last_conv = vgg.output
 
@@ -99,6 +99,7 @@ validation_generator = custom_data_gen(224, 224, 3, num_class, batch_size).gener
 
 model.fit_generator(generator = training_generator,
                     steps_per_epoch = len(train_data)//batch_size,
+                    epochs= num_epoch,
                     validation_data = validation_generator,
                     validation_steps = len(test_data)//batch_size)
 
