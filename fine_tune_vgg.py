@@ -72,7 +72,7 @@ directory = '../images/'
 train_data = read_img_list_from_file(directory,'../splits/train0.txt')
 test_data = read_img_list_from_file(directory,'../splits/test0.txt')
 
-batch_size = int(sys.argv[0])
+batch_size = int(sys.argv[1])
 
 
 last_conv = vgg.output
