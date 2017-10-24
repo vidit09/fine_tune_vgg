@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     model = modified_vgg.get_model(num_class)
     model.compile(loss='categorical_crossentropy', optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
-                  metrics=['accuracy'])
+                  metrics=['categorical_accuracy'])
 
     training_generator = CustomDataGen(224, 224, 3, num_class, batch_size).generate_batch(train_data)
     # validation_generator = CustomDataGen(224, 224, 3, num_class, batch_size).generate_batch(test_data)
