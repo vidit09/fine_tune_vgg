@@ -72,7 +72,7 @@ directory = '../images/'
 train_data = read_img_list_from_file(directory,'../splits/train0.txt')
 test_data = read_img_list_from_file(directory,'../splits/test0.txt')
 
-batch_size = 10
+batch_size = 200
 
 
 last_conv = vgg.output
@@ -97,13 +97,13 @@ model.compile(loss='categorical_crossentropy', optimizer=optimizers.SGD(lr=1e-4,
 training_generator = custom_data_gen(224, 224, 3, num_class, batch_size).generate_batch(train_data)
 validation_generator = custom_data_gen(224, 224, 3, num_class, batch_size).generate_batch(test_data)
 
-# model.fit_generator(generator = training_generator,
-#                     steps_per_epoch = len(train_data)//batch_size,
-#                     validation_data = validation_generator,
-#                     validation_steps = len(test_data)//batch_size)
+model.fit_generator(generator = training_generator,
+                    steps_per_epoch = len(train_data)//batch_size,
+                    validation_data = validation_generator,
+                    validation_steps = len(test_data)//batch_size)
 
-model.fit_generator(generator=training_generator,
-                    steps_per_epoch=1,
-                    epochs=10,
-                    validation_data=validation_generator,
-                    validation_steps=1)
+# model.fit_generator(generator=training_generator,
+#                     steps_per_epoch=1,
+#                     epochs=10,
+#                     validation_data=validation_generator,
+#                     validation_steps=1)
