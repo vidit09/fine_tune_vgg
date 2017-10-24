@@ -9,6 +9,7 @@ from keras import utils
 from keras.callbacks import ModelCheckpoint,TensorBoard
 import numpy as np
 import sys
+from .modified_vgg import get_model
 
 class CustomDataGen():
 
@@ -65,22 +66,7 @@ def read_img_list_from_file(img_dir,file_path):
 
     return data
 
-def get_model():
-    vgg = VGG16(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-    last_conv = vgg.output
 
-    x = Flatten()(last_conv)
-    x = Dense(256, activation='relu')(x)
-    x = Dropout(0.5)(x)
-    x = Dense(num_class, activation='softmax')(x)
-
-    model = Model(vgg.input, x)
-
-    for layer in model.layers[:19]:
-        # print(layer)
-        layer.trainable = False
-
-    return model
 
 if __name__ == "__main__":
 
@@ -93,7 +79,7 @@ if __name__ == "__main__":
     batch_size = int(sys.argv[1])
     num_epoch = int(sys.argv[2])
 
-    model = get_model()
+    model = get_model(num_class)
     model.compile(loss='categorical_crossentropy', optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
                   metrics=['accuracy'])
 
@@ -117,7 +103,7 @@ if __name__ == "__main__":
                         steps_per_epoch = len(train_data)//batch_size,
                         epochs= num_epoch,
                         validation_data = val_data,
-                        validation_steps = len(test_data)//batch_size,
+                        validation_steps = 1,
                         callbacks=callbacks_list)
 
     # model.fit_generator(generator=training_generator,
