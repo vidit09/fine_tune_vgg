@@ -9,7 +9,7 @@ from keras import utils
 from keras.callbacks import ModelCheckpoint,TensorBoard
 import numpy as np
 import sys
-from .modified_vgg import get_model
+from modified_vgg
 
 class CustomDataGen():
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     batch_size = int(sys.argv[1])
     num_epoch = int(sys.argv[2])
 
-    model = get_model(num_class)
+    model = modified_vgg.get_model(num_class)
     model.compile(loss='categorical_crossentropy', optimizer=optimizers.SGD(lr=1e-4, momentum=0.9),
                   metrics=['accuracy'])
 
