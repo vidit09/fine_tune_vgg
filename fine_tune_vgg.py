@@ -103,9 +103,10 @@ if __name__ == "__main__":
     file_path = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
     checkpoint = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
-    tensorboard = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True, write_images=False)
+    # tensorboard = TensorBoard(log_dir='./logs', histogram_freq=1, write_graph=True, write_images=False)
 
-    callbacks_list = [checkpoint, tensorboard]
+    # callbacks_list = [checkpoint, tensorboard]
+    callbacks_list = [checkpoint]
 
     model.fit_generator(generator = training_generator,
                         steps_per_epoch = len(train_data)//batch_size,
