@@ -7,7 +7,7 @@ from keras.models import Model
 from keras import optimizers
 from keras import utils
 import numpy as np
-
+import sys
 
 class custom_data_gen():
 
@@ -72,7 +72,7 @@ directory = '../images/'
 train_data = read_img_list_from_file(directory,'../splits/train0.txt')
 test_data = read_img_list_from_file(directory,'../splits/test0.txt')
 
-batch_size = 200
+batch_size = sys.argv[0]
 
 
 last_conv = vgg.output
