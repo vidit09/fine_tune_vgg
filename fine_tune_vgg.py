@@ -91,8 +91,8 @@ if __name__ == "__main__":
         val_data = (X,y)
         break
 
-    file_path = "weights-improvement-{epoch:02d}-{val_acc:.2f}.hdf5"
-    checkpoint = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    file_path = "weights-improvement-{epoch:02d}-{val_categorical_accuracy:.2f}.hdf5"
+    checkpoint = ModelCheckpoint(file_path, monitor='val_categorical_accuracy', verbose=1, save_best_only=True, mode='max')
 
     tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=False)
 
