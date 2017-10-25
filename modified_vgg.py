@@ -9,15 +9,15 @@ def get_model(num_class):
     last_conv = vgg.output
 
     x = Flatten()(last_conv)
-    # x = Dense(256, activation='relu')(x)#base_version
-    x = Dense(1024, activation='relu')(x)
+    x = Dense(256, activation='relu')(x)#base_version
+    # x = Dense(1024, activation='relu')(x)
     x = Dropout(0.5)(x)
     x = Dense(num_class, activation='softmax')(x)
 
     model = Model(vgg.input, x)
 
-    for layer in model.layers[:19]:
-        # print(layer)
+    for layer in model.layers[:15]:
+        print(layer)
         layer.trainable = False
 
     return model
