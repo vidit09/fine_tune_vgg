@@ -58,7 +58,7 @@ class CustomDataGen():
                 temp_list = [data[k] for k in indexes[batch_id*self.batch_size:(batch_id+1)*self.batch_size]]
 
                 X,y = self.get_data(temp_list)
-                yield self.augmentation.flow(X,y,self.batch_size)
+                return self.augmentation.flow(X,y,self.batch_size)
 
 def read_img_list_from_file(img_dir,file_path):
 
