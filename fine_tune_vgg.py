@@ -59,7 +59,7 @@ class CustomDataGen():
 
                 X,y = self.get_data(temp_list)
                 # return self.augmentation.flow(X,y,self.batch_size)
-                return X,y
+                yield X,y
 
 def read_img_list_from_file(img_dir,file_path):
 
