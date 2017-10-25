@@ -19,6 +19,10 @@ class CustomDataGen():
         self.dim_y = dim_y
         self.dim_z = dim_z
         self.num_class = num_class
+        self.augmentation = image.ImageDataGenerator(
+            rotation_range=20,
+            shear_range=0.5
+        )
 
     def randomize_ind(self,data):
         indexes = np.arange(len(data))
@@ -54,8 +58,7 @@ class CustomDataGen():
                 temp_list = [data[k] for k in indexes[batch_id*self.batch_size:(batch_id+1)*self.batch_size]]
 
                 X,y = self.get_data(temp_list)
-
-                yield X, y
+                yield self.augmentation.flow(X,y,self.batch_size)
 
 def read_img_list_from_file(img_dir,file_path):
 
