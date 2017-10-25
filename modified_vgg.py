@@ -16,7 +16,7 @@ def get_model(num_class):
 
     model = Model(vgg.input, x)
 
-    for layer in model.layers[:15]:
+    for layer in model.layers[:17]:
         print(layer)
         layer.trainable = False
 
